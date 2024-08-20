@@ -1,10 +1,14 @@
 import praw
 import pandas as pd
 import os
+import re
+# make sure to install nltk as well!
+from textblob import TextBlob
+
 ## Read-only instance
-reddit_read_only = praw.Reddit(client_id="",         # your client id
-                               client_secret="",      # your client secret
-                               user_agent="")        # your user agent Authorized instance
+reddit_read_only = praw.Reddit(client_id="5gQa5kXBOXGuQNr5-FTDxg",         # your client id
+                               client_secret="LimsnzLZxr1Mp1xtN1xwtISrSZ0dSw",      # your client secret
+                               user_agent="Spud00sh")        # your user agent Authorized instance
 subreddit = reddit_read_only.subreddit("wallstreetbets")
 
 
@@ -25,7 +29,7 @@ for post in subreddit.hot(limit=50):
 
 
 #scraping the top post of the current month
-posts = subreddit.top("all")
+posts = subreddit.top(time_filter="all")
 
 posts_dict = {"Title": [], "Post Text": [],
               "ID": [], "Score": [],
@@ -57,31 +61,33 @@ for post in posts:
 top_posts = pd.DataFrame(posts_dict)
 top_posts
 #save post to a file
-top_posts.to_csv("Top_Posts.csv", index=True)
+top_posts.to_csv("Top_Posts.csv", index=False)
 top_posts = pd.DataFrame(posts_dict)
 
 
 def my_function():
 
+    print("MATCHING SHIT")
 
-  with open("Top_Posts.csv",'r') as f, open('output.txt','w') as fw:
-      text = f.read()
-      result_string = ''
-
-      words = ["YOLO", "Musk","GME", "tsla"]
-      text2 = text.split(".")
-      for itemIndex in range(len(text2)):
-          for word in words:
-              if word in text2[itemIndex]:
-                  if text2[itemIndex][0] ==' ':
-                      print(text2[itemIndex][1:])
-                      result_string += text2[itemIndex][1:]+'. '
-                      break
-                  else:
-                      print(text2[itemIndex])
-                      result_string += text2[itemIndex]
-                      break
-      print(result_string)
-      fw.write(result_string)
+    # Gets all sentences which contain 3-5 letter capiatlised words e.g. "TSM", "TSLJ"
+    with open("Top_Posts.csv", 'r', encoding='utf-8') as f, open('output.txt', 'w', encoding='utf-8') as fw:
+        text = f.read()
+        result_string = ''
+         # Split the text into sentences
+        text2 = text.split(".")
+        
+        # Regular expression to match FULL CAPS 3-5 letter words
+        pattern = r'\b[A-Z]{3,5}\b'
+        
+        for sentence in text2:
+            # Find all matches in the sentence
+            if re.search(pattern, sentence):
+                # BULLSHIT SENTIMENT ANALYSIS
+                blob = TextBlob(sentence)
+                sentiment = blob.sentiment.polarity
+                result_string += sentence.strip() + '. ' + str(sentiment)
+        
+        print(result_string)
+        fw.write(result_string)
 
 my_function()
