@@ -67,6 +67,8 @@ top_posts = pd.DataFrame(posts_dict)
 
 def my_function():
 
+    global acronym_list, list_of_lists
+
     print("MATCHING SHIT")
 
     # Gets all sentences which contain 3-5 letter capiatlised words e.g. "TSM", "TSLJ"
@@ -80,14 +82,38 @@ def my_function():
         pattern = r'\b[A-Z]{3,5}\b'
         
         for sentence in text2:
-            # Find all matches in the sentence
+            # Find if matches in the sentence
             if re.search(pattern, sentence):
                 # BULLSHIT SENTIMENT ANALYSIS
                 blob = TextBlob(sentence)
                 sentiment = blob.sentiment.polarity
                 result_string += sentence.strip() + '. ' + str(sentiment)
-        
+
+                # Applies sentiment value to each match in sentence
+                matches = re.findall(pattern, sentence)
+                for match in matches:
+                    try:
+                        # if found in list
+                        index = acronym_list.index(match)
+                        list_of_lists[index].append(sentiment)
+                    except:
+                        # else add to lists
+                        acronym_list.append(match)
+                        index = len(acronym_list) - 1
+                        list_of_lists.append([sentiment])
+                    
+                
         print(result_string)
         fw.write(result_string)
 
+acronym_list = []
+acronym_values = []
+list_of_lists = [[]]
+
 my_function()
+
+#List of all acronyms and their scores
+# Now, print each acronym and its corresponding list
+for acronym, sentiment_list in zip(acronym_list, list_of_lists):
+    print(acronym)            # Print the acronym
+    print(sentiment_list)     # Print the corresponding list from list_of_lists
