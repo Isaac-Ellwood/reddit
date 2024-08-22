@@ -6,9 +6,9 @@ import re
 from textblob import TextBlob
 
 ## Read-only instance
-reddit_read_only = praw.Reddit(client_id="5gQa5kXBOXGuQNr5-FTDxg",         # your client id
-                               client_secret="LimsnzLZxr1Mp1xtN1xwtISrSZ0dSw",      # your client secret
-                               user_agent="Spud00sh")        # your user agent Authorized instance
+reddit_read_only = praw.Reddit(client_id="",         # your client id
+                               client_secret="",      # your client secret
+                               user_agent="")        # your user agent Authorized instance
 subreddit = reddit_read_only.subreddit("wallstreetbets")
 
 
@@ -106,14 +106,32 @@ def my_function():
         print(result_string)
         fw.write(result_string)
 
+def avg_and_rank():
+    global acronym_list, list_of_lists, acronym_values, acronym_accuracy
+
+    for value_list in list_of_lists:
+        total = 0.0
+        accuracy = 0
+        for value in value_list:
+            total += value
+            accuracy += 1
+        try:
+            total = total/len(value_list)
+        except:
+            total = 0.0
+        acronym_values.append(total)
+        acronym_accuracy.append(accuracy)
+
+#GLOBALS
 acronym_list = []
 acronym_values = []
+acronym_accuracy = []
 list_of_lists = [[]]
 
 my_function()
+avg_and_rank()
 
 #List of all acronyms and their scores
 # Now, print each acronym and its corresponding list
-for acronym, sentiment_list in zip(acronym_list, list_of_lists):
-    print(acronym)            # Print the acronym
-    print(sentiment_list)     # Print the corresponding list from list_of_lists
+for acronym, value, accuracy in zip(acronym_list, acronym_values, acronym_accuracy):
+    print("Name: " + acronym + "    Value: " + str(value) + "   Accuracy: " + str(accuracy))            # Print the acronym
