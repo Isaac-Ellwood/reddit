@@ -121,6 +121,15 @@ def avg_and_rank():
             total = 0.0
         acronym_values.append(total)
         acronym_accuracy.append(accuracy)
+    
+    # Zip the lists together, sort by acronym_values, and unzip
+    sorted_data = sorted(zip(acronym_values, acronym_list, acronym_accuracy), reverse=True)
+    acronym_values, acronym_list, acronym_accuracy = zip(*sorted_data)
+
+    # Convert tuples back to lists
+    acronym_values = list(acronym_values)
+    acronym_list = list(acronym_list)
+    acronym_accuracy = list(acronym_accuracy)
 
 #GLOBALS
 acronym_list = []
